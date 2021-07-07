@@ -1,62 +1,110 @@
 <html>
-    <head>
-      <title>Dashboard</title>
-      <!-- Compiled and minified CSS -->
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<head>
+  <title>Dashboard</title>
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js'></script>
+  <!-- Leaflet.js GIS links -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+</head>
 
+  <body>
+    <!-- Navbar from Materialize CSS -->
+    <nav>
+      <div class="nav-wrapper red darken-2 white-text">
+        <a href="#" class="brand-logo" style='padding-left:10px;'>Dashboard</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li><a href="sass.html">Sass</a></li>
+          <li><a href="badges.html">Components</a></li>
+          <li><a href="collapsible.html">JavaScript</a></li>
+        </ul>
+      </div>
+    </nav>
 
-      <!-- Compiled and minified JavaScript -->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-
-
-    </head>
-
-    <body>
-      <nav>
-        <div class="nav-wrapper black white-text">
-          <a href="" class="brand-logo">Logo</a>
-          <ul id="nav-mobile" class="right hide-on-med-and-down">
-            <li><a href="">sass</a></li>
-            <li><a href="">sass <span class="new badge">4</span></a></li>
-            <li><a href="">sass</a></li>
-          </ul>
-        </div>
-      </nav>
-
-
-
-
-        <div class="row">
-
-          <div class="col s12 m6">
-            <div class="card blue-grey darken-1">
-              <div class="card-content white-text">
-                <span class="card-title">Card Title</span>
-                <p>I am a very simple card. I am good at containing small bits of information.
-                I am convenient because I require little markup to use effectively.</p>
-              </div>
-            </div>
+    <div class="row">
+      <div class="col s12 m6">
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">Top 10 COVID deaths</span>
+            <div id='output'></div>
           </div>
-
-
-          <div class="col s12 m6">
-            <div class="card blue-grey darken-1">
-              <div class="card-content white-text">
-                <span class="card-title">Card Title</span>
-                <p>I am a very simple card. I am good at containing small bits of information.
-                I am convenient because I require little markup to use effectively.</p>
-              </div>
-            </div>
-          </div>
-
         </div>
+      </div> <!-- end of col -->
+      <div class="col s12 m6">
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">Map</span>
+            <div id='map' style="width: 100%; height: 63%"></div>
+        </div>
+      </div> <!-- end of col -->
+    </div> <!-- end of 1st row -->
+    <div class="row">
+      <div class="col s12 m6">
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">Card Title</span>
+            <p>I am a very simple card. I am good at containing small bits of information.
+            I am convenient because I require little markup to use effectively.</p>
+          </div>
+        </div>
+      </div> <!-- end of col -->
+      <div class="col s12 m6">
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">Card Title</span>
+            <p>I am a very simple card. I am good at containing small bits of information.
+            I am convenient because I require little markup to use effectively.</p>
+          </div>
+        </div>
+      </div> <!-- end of col -->
+    </div> <!-- end of 2nd row -->
 
 
-    </body>
+  </body>
 
-    <script>
-    </script>
+  <script>
+    axios.get("https://www.trackcorona.live/api/countries")
+      .then(response => {
+      console.log(response.data.data) // place data on page
+      buildList(response.data.data);
+    })
 
+    mapIt();
+
+    function mapIt(){
+      var map = L.map('map').setView([31.0, 121.0], 5);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+
+      L.marker([31, 121]).addTo(map)
+          .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
+          .openPopup();
+    }
+
+
+    function buildList(data) {
+      var dHandle = document.getElementById('output');
+      var myHTML = "'<ul class='collection'>";
+
+      //coviddata.data.sort(function (a, b) {
+      data.sort(function (a, b) {
+        return b.dead - a.dead;
+      });
+
+      //for (i=0; i<coviddata.data.length; i++) {
+      //  myHTML = myHTML + "<li>" + coviddata.data[i].location + " - " + coviddata.data[i].dead + "</li>";
+      for (i=0; i<10; i++) {
+        myHTML = myHTML + "<li class='collection-item'>" + data[i].location + "<span class ='badge'>" + data[i].dead + "</span></li>";
+      }
+      myHTML = myHTML + "</ul>"
+      dHandle.innerHTML = myHTML;
+  }
+  </script>
 
 </html>
