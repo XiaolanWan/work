@@ -2,6 +2,10 @@
 <head>
   <title>Dashboard</title>
   <!-- Compiled and minified CSS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <!-- Compiled and minified JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
@@ -14,6 +18,13 @@
   <style>
   .card {
     height: 550px;
+  }
+  #legned {
+    float: left;
+    display: inline;
+    color: white;
+    padding:10px;
+    margin: 5px;
   }
   </style>
 </head>
@@ -44,6 +55,7 @@
         <div class="card">
           <div class="card-content">
             <span class="card-title">Map</span>
+
             <div id='map' style="width: 100%; height: 63%"></div>
             <!-- <div style = 'float:left'>
               <div style = "padding: 5px; background-color: :'red'">hot</div>
@@ -56,18 +68,16 @@
       <div class="col s12 m6">
         <div class="card">
           <div class="card-content">
-            <span class="card-title">Card Title</span>
-            <p>I am a very simple card. I am good at containing small bits of information.
-            I am convenient because I require little markup to use effectively.</p>
+            <span class="card-title">Bar Graph</span>
+            <canvas id="bar-chart" width="800" height="500"></canvas>
           </div>
         </div>
       </div> <!-- end of col -->
       <div class="col s12 m6">
         <div class="card">
           <div class="card-content">
-            <span class="card-title">Card Title</span>
-            <p>I am a very simple card. I am good at containing small bits of information.
-            I am convenient because I require little markup to use effectively.</p>
+            <span class="card-title">Pie Chart</span>
+            <canvas id="pie-chart" width="800" height="500"></canvas>
           </div>
         </div>
       </div> <!-- end of col -->
@@ -82,9 +92,61 @@
       console.log(response.data.data) // place data on page
       buildList(response.data.data);
       mapAlgo(response.data.data);
+      barGraph(response.data.data);
     })
 
-    //mapIt();
+
+
+    function barGraph(cdata){
+      var labArray = [];
+      var dataArray = [];
+
+      for (i=0; i<10; i++) {
+        labArray.push(cdata[i].location);
+        dataArray.push(cdata[i].dead);
+      }
+
+      new Chart(document.getElementById("bar-chart"), {
+      type: 'bar',
+      data: {
+        labels: labArray,
+        datasets: [
+          {
+            label: "COVID-19 deaths",
+            backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850","#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+            data: dataArray
+          }
+        ]
+      },
+      options: {
+        legend: { display: false },
+        title: {
+          display: true,
+          text: 'Top 10 COVID-19 deaths'
+        }
+      }
+  });
+    new Chart(document.getElementById("pie-chart"), {
+        type: 'pie',
+        data: {
+          labels: labArray,
+          datasets: [{
+            label: "Population (millions)",
+            backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+            data: dataArray
+          }]
+        },
+        options: {
+          title: {
+            display: true,
+            text: 'Top 10 COVID-19 deaths'
+          }
+        }
+    });
+  }
+
+
+
 
     function mapAlgo(response) {
       var map = L.map('map').setView([30, 0], 2);
@@ -142,6 +204,8 @@
       }
       myHTML = myHTML + "</ul>"
       dHandle.innerHTML = myHTML;
+
+
   }
   </script>
 
